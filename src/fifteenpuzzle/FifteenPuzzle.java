@@ -3,9 +3,7 @@ package fifteenpuzzle;
 import java.io.*;
 import java.util.ArrayList;
 
-import apple.laf.JRSUIConstants.Size;
-
-public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
+public class FifteenPuzzle{
 	public final static int UP = 0;
 	public final static int DOWN = 1;
 	public final static int LEFT = 2;
@@ -13,9 +11,9 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 
 	public static int SIZE;
 
-	int board[][];
-	ArrayList<Integer> moves;// array of moves from intital
-	String solvedPortion;
+	public int board[][];
+	public ArrayList<Integer> moves;// array of moves from intital
+	public String solvedPortion;
 	
 
 	private void checkBoard() throws BadBoardException {
@@ -247,19 +245,25 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 		return board.hashCode() + solvedPortion.hashCode();
 	}
 
-	@Override
-	public int compareTo(FifteenPuzzle other) {
+
+	public int compareTo(FifteenPuzzle other, int tile) {
+		int num = 0;
+		
+
+		if(this.heuristic(tile) < other.heuristic(tile)){
+			num = 1;
+		}
 
 		if(solvedPortion.length() > other.solvedPortion.length())
-		return 1;
+			num = 1;
 
 		if (solvedPortion.length() == other.solvedPortion.length())
-		return 0;
+			num = 0;
 
 		if (solvedPortion.length() < other.solvedPortion.length())
-		return -1;
+			num = -1;
 		
-		return 10;
+		return num;
 	}
 
 	public double heuristic(int tile){
@@ -268,9 +272,7 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 		double dx = Math.abs(curr.i - dest.i);
     	double dy = Math.abs(curr.j - dest.j);
     	return  (dx + dy);
-		
 
-		
 	}
 
 	
