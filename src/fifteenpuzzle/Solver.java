@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
-
+import com.google.common.graph.ValueGraph;
 
 public class Solver {
 	
@@ -45,31 +45,37 @@ public class Solver {
 		while (!queue.isEmpty()) {
 			AStarNodeWrapper nodeWrapper = queue.pollFirst();
 			FifteenPuzzle node = nodeWrapper.getNode();
+			if(node.solvedPortion.length() >= tile){
+				tile = node.solvedPortion.length() + 1;
+			}
 			shortestPathFound.add(node);
 	  
 			// Have we reached the target? --> Build and return the path
 			if (node.equals(target)) {
 			  return buildPath(nodeWrapper);
 			}
-	  
+			// The algorithm should not choose states that lower the score
 			// Iterate over all neighbors
-			Set<FifteenPuzzle> neighbors = graph.adjacentNodes(node);
-			for (N neighbor : neighbors) {
+			AdjacentVerticies adj = new AdjacentVerticies(node);
+			Set<FifteenPuzzle> neighbors = adj.adjacentNodes();
+			for (FifteenPuzzle neighbor : neighbors) {
 			  // Ignore neighbor if shortest path already found
 			  if (shortestPathFound.contains(neighbor)) {
 				continue;
 			  }
 	  
 			  // Calculate total cost from start to neighbor via current node
-			  double cost = graph.edgeValue(node, neighbor).orElseThrow(IllegalStateException::new);
+			  node.heuristic(tile);
+			  neighbor.heuristic(tile);
+			  double cost = graph.edgeValue(node, neighbor);
 			  double totalCostFromStart = nodeWrapper.getTotalCostFromStart() + cost;
 	  
 			  // Neighbor not yet discovered?
-			  AStarNodeWrapper<N> neighborWrapper = nodeWrappers.get(neighbor);
+			  AStarNodeWrapper neighborWrapper = nodeWrappers.get(neighbor);
 			  if (neighborWrapper == null) {
 				neighborWrapper =
-					new AStarNodeWrapper<>(
-						neighbor, nodeWrapper, totalCostFromStart, heuristic.apply(neighbor));
+					new AStarNodeWrapper(
+						neighbor, nodeWrapper, totalCostFromStart, node.heuristic(tile));
 				nodeWrappers.put(neighbor, neighborWrapper);
 				queue.add(neighborWrapper);
 			  }
@@ -124,53 +130,11 @@ public class Solver {
 		// keep note of tiles in position
 		Random rand = new Random();
 		
-		Boolean solved = false;
-		
-		SolvingAlgorithm solve = new SolvingAlgorithm(puzzle);
-		
+		Boolean solved = false;		
 
 
 		while(solved == false){
-		for(int i = 0; i < puzzle.SIZE; i++){
-			for(int j = 0; j < puzzle.SIZE; j++){
-				ArrayList<FifteenPuzzle> states = new ArrayList<FifteenPuzzle>();
-				
-				try {
-					FifteenPuzzle temp = puzzle;
-					temp.makeMove(temp.getBoard()[i][j], 0);
-					temp.moves.add(0);
-					states.add(temp);
-				} catch (IllegalMoveException e) {
-					// TODO: handle exception
-				}
-				try {
-					FifteenPuzzle temp = puzzle;
-					temp.makeMove(temp.getBoard()[i][j], 1);
-					temp.moves.add(1);
-					states.add(temp);
-				} catch (IllegalMoveException e) {
-					// TODO: handle exception
-				}
-				try {
-					FifteenPuzzle temp = puzzle;
-					temp.makeMove(temp.getBoard()[i][j], 2);
-					temp.moves.add(2);
-					states.add(temp);
-				} catch (IllegalMoveException e) {
-					// TODO: handle exception
-				}
-				try {
-					FifteenPuzzle temp = puzzle;
-					temp.makeMove(temp.getBoard()[i][j], 3);
-					temp.moves.add(3);
-					states.add(temp);
-				} catch (IllegalMoveException e) {
-					// TODO: handle exception
-				}
-			
-			
-			}
-		}
+		
 
 		//puzzle.makeMove(0, 0);
 

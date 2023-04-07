@@ -2,18 +2,21 @@ package fifteenpuzzle;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Set;
 
-public class FifteenPuzzle{
+public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 	public final static int UP = 0;
 	public final static int DOWN = 1;
 	public final static int LEFT = 2;
 	public final static int RIGHT = 3;
 
-	public static int SIZE;
+	public int SIZE;
 
 	public int board[][];
 	public ArrayList<Integer> moves;// array of moves from intital
 	public String solvedPortion;
+	private int score;
+	private int heuristic;
 	
 
 	private void checkBoard() throws BadBoardException {
@@ -47,6 +50,8 @@ public class FifteenPuzzle{
 		board = new int[SIZE][SIZE];
 		moves = new ArrayList<Integer>();
 		solvedPortion = curSolved();
+		score = 0;
+		heuristic = -1;
 		int c1, c2, s;
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
@@ -232,52 +237,47 @@ public class FifteenPuzzle{
 	
 	}
 
-	@Override
-	public boolean equals(Object other) {
-		if(this.toString().equals(other.toString()))
-		return true;
-
-		return false;
-	}
 
 	@Override
 	public int hashCode() {
-		return board.hashCode() + solvedPortion.hashCode();
+		return board.hashCode();
 	}
 
 
-	public int compareTo(FifteenPuzzle other, int tile) {
-		int num = 0;
-		
-
-		if(this.heuristic(tile) < other.heuristic(tile)){
-			num = 1;
-		}
-
-		if(solvedPortion.length() > other.solvedPortion.length())
-			num = 1;
-
-		if (solvedPortion.length() == other.solvedPortion.length())
-			num = 0;
-
-		if (solvedPortion.length() < other.solvedPortion.length())
-			num = -1;
-		
-		return num;
-	}
 
 	public double heuristic(int tile){
 		Pair curr = findCoord(tile);
 		Pair dest = new Pair((tile%4)-1, (tile/4));
 		double dx = Math.abs(curr.i - dest.i);
     	double dy = Math.abs(curr.j - dest.j);
-    	return  (dx + dy);
+		this.heuristic = (int) (dx + dy);
+    	return  SIZE*(dx + dy);
 
 	}
 
-	
+	public double score(int tile){
+		double score = 15;
+		score -= solvedPortion.length();
+		score += this.heuristic(tile);
+		return score;
+	}
 
-	
+	public double getScore(){
+		return score;
+	}
+
+	@Override
+	public int compareTo(FifteenPuzzle o) {
+		double compare = Double.compare(this.getScore(), o.getScore());
+		if (compare == 0)
+			return 1;
+
+		return 0;
+	}
+
+	public int getHeuristic(){
+		return heuristic;
+	}
 
 
 }

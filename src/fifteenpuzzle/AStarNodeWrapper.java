@@ -8,12 +8,13 @@ package fifteenpuzzle;
  *
  * @author <a href="sven@happycoders.eu">Sven Woltmann</a>
  */
-public class AStarNodeWrapper {
+public class AStarNodeWrapper implements Comparable<AStarNodeWrapper>{
   private final FifteenPuzzle node;
   private AStarNodeWrapper predecessor;
   private double totalCostFromStart;
   private final double minimumRemainingCostToTarget;
   private double costSum;
+  private double score;
 
   public AStarNodeWrapper(
       FifteenPuzzle node,
@@ -52,21 +53,9 @@ public class AStarNodeWrapper {
     return totalCostFromStart;
   }
 
-  @Override
-  public int compare(AStarNodeWrapper other) {
-    int compare = Double.compare(this.costSum, other.costSum);
-    if (compare == 0) {
-      compare = node.compare(other.node);
-    }
-    return compare;
-  }
 
   public double heuristic(int tile){
-		Pair curr = findCoord(tile);
-		Pair dest = new Pair((tile%4)-1, (tile/4));
-		double dx = Math.abs(curr.i - dest.i);
-    	double dy = Math.abs(curr.j - dest.j);
-    	return  (dx + dy);
+		return node.heuristic(tile);
 
 	}
 
@@ -81,8 +70,8 @@ public class AStarNodeWrapper {
 
 	private Pair findCoord(int tile) {
 		int i = 0, j = 0;
-		for (i = 0; i < SIZE; i++)
-			for (j = 0; j < SIZE; j++)
+		for (i = 0; i < node.SIZE; i++)
+			for (j = 0; j < node.SIZE; j++)
 				if (node.board[i][j] == tile)
 					return new Pair(i, j);
 		return null;
@@ -106,6 +95,12 @@ public class AStarNodeWrapper {
         + ", costSum="
         + costSum
         + '}';
+  }
+
+  @Override
+  public int compareTo(AStarNodeWrapper o) {
+    int compare = (int) Math.round(Math.abs(this.node.getScore() - o.node.getScore()));
+    return compare;
   }
 
 
