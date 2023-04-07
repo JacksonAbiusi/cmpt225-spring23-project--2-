@@ -1,20 +1,19 @@
 package fifteenpuzzle;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.PriorityQueue;
-import java.util.Random;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Function;
-import com.google.common.graph.ValueGraph;
 
 public class Solver {
 	
@@ -29,7 +28,7 @@ public class Solver {
 	  }
 
 	public static List<FifteenPuzzle> findShortestPath(
-      StateGraph graph, FifteenPuzzle source, FifteenPuzzle target, Double heuristic) {
+      StateGraph graph, FifteenPuzzle source) {
 
 		Map<FifteenPuzzle, AStarNodeWrapper> nodeWrappers = new HashMap<>();
 		TreeSet<AStarNodeWrapper> queue = new TreeSet<>();
@@ -51,7 +50,7 @@ public class Solver {
 			shortestPathFound.add(node);
 	  
 			// Have we reached the target? --> Build and return the path
-			if (node.equals(target)) {
+			if (node.isSolved()) {
 			  return buildPath(nodeWrapper);
 			}
 			// The algorithm should not choose states that lower the score
@@ -103,10 +102,10 @@ public class Solver {
 	  }
 
 	public static void main(String[] args) throws IOException, BadBoardException {
-//		System.out.println("number of arguments: " + args.length);
-//		for (int i = 0; i < args.length; i++) {
-//			System.out.println(args[i]);
-//		}
+		System.out.println("number of arguments: " + args.length);
+		for (int i = 0; i < args.length; i++) {
+		System.out.println(args[i]);
+		}
 
 		if (args.length < 2) {
 			System.out.println("File names are not specified");
@@ -117,10 +116,37 @@ public class Solver {
 		
 		// TODO
 		//File input = new File(args[0]);
-		File input = new File(args[0]);
 		// parse the board like normal
 		
-		FifteenPuzzle puzzle = new FifteenPuzzle(args[0]);
+		FifteenPuzzle in = new FifteenPuzzle(args[0]);
+		//FifteenPuzzle out = new FifteenPuzzle(args[1]);
+		BufferedReader r = new BufferedReader(new FileReader(args[1]));
+		StringBuilder str = new StringBuilder();
+		String line = null;
+		String ls = System.getProperty("line.separator");
+		while((line = r.readLine()) != null){
+			str.append(line);
+			str.append(ls);
+		}
+		str.deleteCharAt(str.length()-1);
+		r.close();
+		String outString = str.toString();
+		StateGraph graph = new StateGraph();
+		List<FifteenPuzzle> solvedList = Solver.findShortestPath(graph, in);
+
+		Iterator<FifteenPuzzle> it = solvedList.iterator();
+		String funcString = ""; //String from the list derived from shortestPath
+		while(it.hasNext()){
+			funcString += it.next().move;
+		}
+		if(funcString.equals(outString)){
+			System.out.println("Solution found");
+		} else{
+			System.out.println("Solution not found");
+			System.out.println(funcString);
+			System.out.println(outString);
+		}
+		
 		
 		
 		// turn puzzle into graph
@@ -128,17 +154,6 @@ public class Solver {
 		// find path from current state to desired state
 		// we will need to check if the move we made moved the tile into the desired position
 		// keep note of tiles in position
-		Random rand = new Random();
-		
-		Boolean solved = false;		
-
-
-		while(solved == false){
-		
-
-		//puzzle.makeMove(0, 0);
-
-	}
 
 
 

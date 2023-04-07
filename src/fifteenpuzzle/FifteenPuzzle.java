@@ -13,7 +13,7 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 	public int SIZE;
 
 	public int board[][];
-	public ArrayList<Integer> moves;// array of moves from intital
+	public String move;// the move from previous node to get to current puzzle
 	public String solvedPortion;
 	private int score;
 	private int heuristic;
@@ -48,10 +48,10 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
 		SIZE = Integer.parseInt(br.readLine());
 		board = new int[SIZE][SIZE];
-		moves = new ArrayList<Integer>();
+		move = "";
 		solvedPortion = curSolved();
 		score = 0;
-		heuristic = -1;
+		heuristic = 100;
 		int c1, c2, s;
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
@@ -152,7 +152,7 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 	public boolean isSolved() {
 		for (int i = 0; i < SIZE; i++)
 			for (int j = 0; j < SIZE; j++)
-				if (board[i][j] != (4 * i + j + 1) % 16)
+				if (board[i][j] != (SIZE * i + j + 1) % 16)
 					return false;
 		return true;
 	}

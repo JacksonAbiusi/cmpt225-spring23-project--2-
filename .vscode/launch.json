@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "BoardGen",
+            "request": "launch",
+            "mainClass": "fifteenpuzzle.BoardGen",
+            "projectName": "cmpt225-spring23-project--2-_9fa3d380"
+        },
+        {
+            "type": "java",
+            "name": "Solver",
+            "request": "launch",
+            "mainClass": "fifteenpuzzle.Solver",
+            "projectName": "cmpt225-spring23-project--2-_9fa3d380",
+            "args": "board1.txt sol1.txt"
+        }
+    ]
+}

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import com.google.common.graph.ValueGraph;
 
 public class StateGraph {
   private Map<FifteenPuzzle, List<FifteenPuzzle>> adjList = new HashMap<>();

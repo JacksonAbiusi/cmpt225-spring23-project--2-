@@ -3,19 +3,19 @@ package fifteenpuzzle;
 
 
 public class Edge {
-    private Vertex start;
-    private Vertex end;
+    private FifteenPuzzle start;
+    private FifteenPuzzle end;
 
-    public Edge(Vertex startV, Vertex endV, Integer inputWeight) {
+    public Edge(FifteenPuzzle startV, FifteenPuzzle endV, Integer inputWeight) {
         this.start = startV;
         this.end = endV;
     }
 
-    public Vertex getStart() {
+    public FifteenPuzzle getStart() {
         return this.start;
     }
 
-    public Vertex getEnd() {
+    public FifteenPuzzle getEnd() {
         return this.end;
     }
 

@@ -9,12 +9,12 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import fifteenpuzzle.FifteenPuzzle;
-import javafx.scene.Node;
 
 public class AdjacentVerticies {
     private Set<FifteenPuzzle> adj;
     private int size;
     private FifteenPuzzle puzzle;
+	
 
     public AdjacentVerticies(FifteenPuzzle puzzle){
         adj = new TreeSet<FifteenPuzzle>();
@@ -29,7 +29,7 @@ public class AdjacentVerticies {
 		try {
 			FifteenPuzzle temp = puzzle;
 			temp.makeMove(temp.getBoard()[i][j], 0);
-			temp.moves.add(0);
+			temp.move =(""+( 4 * i + j + 1 % 16) + "U" + "\n");
 			adj.add(temp);
 		} catch (IllegalMoveException e) {
 			// TODO: handle exception
@@ -37,7 +37,7 @@ public class AdjacentVerticies {
 		try {
 			FifteenPuzzle temp = puzzle;
 			temp.makeMove(temp.getBoard()[i][j], 1);
-			temp.moves.add(1);
+			temp.move =(""+( 4 * i + j + 1 % 16) + "D" + "\n");
 			adj.add(temp);
 		} catch (IllegalMoveException e) {
 			// TODO: handle exception
@@ -45,7 +45,7 @@ public class AdjacentVerticies {
 		try {
 			FifteenPuzzle temp = puzzle;
 			temp.makeMove(temp.getBoard()[i][j], 2);
-			temp.moves.add(2);
+			temp.move =(""+( 4 * i + j + 1 % 16) + "L" + "\n");
 			adj.add(temp);
 		} catch (IllegalMoveException e) {
 			// TODO: handle exception
@@ -53,7 +53,7 @@ public class AdjacentVerticies {
 		try {
 			FifteenPuzzle temp = puzzle;
 			temp.makeMove(temp.getBoard()[i][j], 3);
-			temp.moves.add(3);
+			temp.move =(""+( 4 * i + j + 1 % 16) + "R" + "\n");
 			adj.add(temp);
 		} catch (IllegalMoveException e) {
 			// TODO: handle exception
