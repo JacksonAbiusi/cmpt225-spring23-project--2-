@@ -7,6 +7,14 @@
 
         {
             "type": "java",
+            "name": "Solver",
+            "request": "launch",
+            "mainClass": "fifteenpuzzle.Solver",
+            "projectName": "cmpt225-spring23-project--2-_ca2983ea",
+            "args": "board13.txt sol1.txt"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"

@@ -32,7 +32,7 @@ public class Solver {
 
 		Map<FifteenPuzzle, AStarNodeWrapper> nodeWrappers = new HashMap<>();
 		TreeSet<AStarNodeWrapper> queue = new TreeSet<>();
-		Set<FifteenPuzzle> shortestPathFound = new HashSet<>();
+		Set<FifteenPuzzle> shortestPathFound = new HashSet<FifteenPuzzle>();
 	
 		// Add source to queue
 		int tile = 1;
@@ -44,28 +44,35 @@ public class Solver {
 		while (!queue.isEmpty()) {
 			AStarNodeWrapper nodeWrapper = queue.pollFirst();
 			FifteenPuzzle node = nodeWrapper.getNode();
-			if(node.solvedPortion.length() >= tile){
-				tile = node.solvedPortion.length() + 1;
-			}
+		
+			tile = node.solvedPortion.length() + 1;
+			
+			System.out.println(node);
+			System.out.println("added node" + "Score:" + node.getScore() + " Move:" + node.move);
 			shortestPathFound.add(node);
-	  
+			
+			
+
 			// Have we reached the target? --> Build and return the path
 			if (node.isSolved()) {
 			  return buildPath(nodeWrapper);
 			}
 			// The algorithm should not choose states that lower the score
 			// Iterate over all neighbors
-			AdjacentVerticies adj = new AdjacentVerticies(node);
-			Set<FifteenPuzzle> neighbors = adj.adjacentNodes();
+			AdjacentVerticies adj = new AdjacentVerticies();
+			Set<FifteenPuzzle> neighbors = adj.adjNodes(node, tile);
+			
 			for (FifteenPuzzle neighbor : neighbors) {
 			  // Ignore neighbor if shortest path already found
+			  System.out.println(neighbor.score(tile));
+
 			  if (shortestPathFound.contains(neighbor)) {
 				continue;
 			  }
-	  
 			  // Calculate total cost from start to neighbor via current node
 			  node.heuristic(tile);
 			  neighbor.heuristic(tile);
+			
 			  double cost = graph.edgeValue(node, neighbor);
 			  double totalCostFromStart = nodeWrapper.getTotalCostFromStart() + cost;
 	  
@@ -119,6 +126,7 @@ public class Solver {
 		// parse the board like normal
 		
 		FifteenPuzzle in = new FifteenPuzzle(args[0]);
+		
 		//FifteenPuzzle out = new FifteenPuzzle(args[1]);
 		BufferedReader r = new BufferedReader(new FileReader(args[1]));
 		StringBuilder str = new StringBuilder();
@@ -140,11 +148,12 @@ public class Solver {
 			funcString += it.next().move;
 		}
 		if(funcString.equals(outString)){
-			System.out.println("Solution found");
+			System.out.println("Perfect Sol");
 		} else{
-			System.out.println("Solution not found");
+			System.out.println("solution");
 			System.out.println(funcString);
 			System.out.println(outString);
+			System.out.println("Moves Required " + (solvedList.size()-1));
 		}
 		
 		

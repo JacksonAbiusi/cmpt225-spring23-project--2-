@@ -2,7 +2,11 @@ package fifteenpuzzle;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 import java.util.Set;
+
+import javafx.geometry.Side;
 
 public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 	public final static int UP = 0;
@@ -12,11 +16,11 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 
 	public int SIZE;
 
-	public int board[][];
+	private int board[][];
 	public String move;// the move from previous node to get to current puzzle
 	public String solvedPortion;
-	private int score;
-	private int heuristic;
+	private double score;
+	private int heuristic = 100;
 	
 
 	private void checkBoard() throws BadBoardException {
@@ -74,7 +78,23 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 		br.close();
 	}
 
-	private class Pair {
+	public FifteenPuzzle(FifteenPuzzle p, int tile){
+		this.SIZE = p.SIZE;
+		this.board = new int[SIZE][SIZE];
+		for(int i = 0; i < SIZE; i++){
+			for(int j = 0; j < SIZE; j++){
+				this.board[i][j] = p.board[i][j];
+			}
+		}
+		this.solvedPortion = curSolved();
+		this.move = "";
+		this.score = (int) score(tile);
+		this.heuristic = 100;
+		
+		
+	}
+
+	public class Pair {
 		int i, j;
 
 		Pair(int i, int j) {
@@ -83,7 +103,7 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 		}
 	}
 
-	private Pair findCoord(int tile) {
+	public Pair findCoord(int tile) {
 		int i = 0, j = 0;
 		for (i = 0; i < SIZE; i++)
 			for (j = 0; j < SIZE; j++)
@@ -152,7 +172,7 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 	public boolean isSolved() {
 		for (int i = 0; i < SIZE; i++)
 			for (int j = 0; j < SIZE; j++)
-				if (board[i][j] != (SIZE * i + j + 1) % 16)
+				if (board[i][j] != (SIZE * i + j + 1) % (SIZE*SIZE))
 					return false;
 		return true;
 	}
@@ -161,8 +181,12 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 		String s = "";
 		for (int i = 0; i < SIZE; i++)
 			for (int j = 0; j < SIZE; j++)
-				if (board[i][j] != (4 * i + j + 1) % 16)
+				if (board[i][j] == (SIZE * i + j + 1) % 16){
 					s += board[i][j];
+				} else{
+					return s;
+				}
+					
 		return s;
 	}
 
@@ -188,6 +212,24 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 			ans += "\n";
 		}
 		return ans;
+	}
+
+	public String printBoard(){
+		String ans = "";
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++)
+				ans += "" + board[i][j];
+		}
+		return ans;
+	}
+
+	public Pair blankTile(){
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++)
+				if( board[i][j] == 0)
+				return new Pair(i, j);
+		}
+		return null;
 	}
 
 	public Integer nextMove(){
@@ -240,25 +282,45 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 
 	@Override
 	public int hashCode() {
-		return board.hashCode();
+		return printBoard().hashCode();
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		if(!(obj instanceof FifteenPuzzle)){
+			return false;
+		}
+		if(this == obj){
+			return true;
+		}
+		FifteenPuzzle p = (FifteenPuzzle) obj;
+		if(this.hashCode() == p.hashCode()){
+			return true;
+		}
+		return false;
+	}
+	
 
 
 
 	public double heuristic(int tile){
 		Pair curr = findCoord(tile);
 		Pair dest = new Pair((tile%4)-1, (tile/4));
-		double dx = Math.abs(curr.i - dest.i);
-    	double dy = Math.abs(curr.j - dest.j);
-		this.heuristic = (int) (dx + dy);
-    	return  SIZE*(dx + dy);
+		double dy = Math.abs(curr.i - dest.i);
+    	double dx = Math.abs(curr.j - dest.j);
+		this.heuristic = SIZE*(int) (dx + dy);
+    	return heuristic;
 
 	}
 
 	public double score(int tile){
-		double score = 15;
-		score -= solvedPortion.length();
-		score += this.heuristic(tile);
+		double sum = SIZE*SIZE;
+		sum -= solvedPortion.length()*2;
+		sum += this.heuristic(tile);
+		Random r = new Random();
+		sum += r.nextDouble();
+		this.score =  sum;
 		return score;
 	}
 

@@ -72,7 +72,7 @@ public class AStarNodeWrapper implements Comparable<AStarNodeWrapper>{
 		int i = 0, j = 0;
 		for (i = 0; i < node.SIZE; i++)
 			for (j = 0; j < node.SIZE; j++)
-				if (node.board[i][j] == tile)
+				if (node.getBoard()[i][j] == tile)
 					return new Pair(i, j);
 		return null;
 	}
@@ -99,8 +99,15 @@ public class AStarNodeWrapper implements Comparable<AStarNodeWrapper>{
 
   @Override
   public int compareTo(AStarNodeWrapper o) {
-    int compare = (int) Math.round(Math.abs(this.node.getScore() - o.node.getScore()));
-    return compare;
+    if(this.node.equals(o.node))
+    return 0;
+
+    if(this.node.getScore() > o.node.getScore()){
+      return 1;
+    } else{
+      return -1;
+    }
+    
   }
 
 

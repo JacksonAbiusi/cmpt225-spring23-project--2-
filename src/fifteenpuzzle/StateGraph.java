@@ -81,9 +81,9 @@ public class StateGraph {
 
   public double edgeValue(FifteenPuzzle node, FifteenPuzzle neighbour){
     double val = 0;
-    if(this.hasEdge(node, neighbour)){
-      Math.abs(neighbour.getHeuristic() - node.getHeuristic());
-    }
+    
+   val = Math.abs(neighbour.getHeuristic() - node.getHeuristic());
+    
     return val;
   }
 	
