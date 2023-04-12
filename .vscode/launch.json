@@ -11,7 +11,7 @@
             "request": "launch",
             "mainClass": "fifteenpuzzle.Solver",
             "projectName": "cmpt225-spring23-project--2-_ca2983ea",
-            "args": "board21.txt sol1.txt"
+            "args": "board20.txt outee.txt"
         },
         {
             "type": "java",

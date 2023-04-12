@@ -3,8 +3,10 @@ package fifteenpuzzle;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -108,27 +110,10 @@ public class Solver {
 			System.out.println("usage: java " + MethodHandles.lookup().lookupClass().getName() + " input_file output_file");
 			return;
 		}
-		
-		
-		// TODO
-		//File input = new File(args[0]);
-		// parse the board like normal
-		
-		FifteenPuzzle in = new FifteenPuzzle(args[0]);
-		
-		//FifteenPuzzle out = new FifteenPuzzle(args[1]);
-		BufferedReader r = new BufferedReader(new FileReader(args[1]));
-		StringBuilder str = new StringBuilder();
-		String line = null;
-		String ls = System.getProperty("line.separator");
-		while((line = r.readLine()) != null){
-			str.append(line);
-			str.append(ls);
-		}
-		str.deleteCharAt(str.length()-1);
-		r.close();
-		String outString = str.toString();
+		FifteenPuzzle in = new FifteenPuzzle(args[0]);	
 		StateGraph graph = new StateGraph();
+		try {
+		
 		List<FifteenPuzzle> solvedList = Solver.findShortestPath(graph, in);
 
 		Iterator<FifteenPuzzle> it = solvedList.iterator();
@@ -137,27 +122,25 @@ public class Solver {
 			funcString += it.next().move;
 		}
 		funcString = funcString.substring(0, funcString.length()-1);
-		System.out.println(funcString.length());
-		System.out.println(outString.length());
-		if(funcString.equals(outString)){
-			System.out.println("Perfect Sol");
-			System.out.println(funcString);
-		} else{
+		//System.out.println(outString.length());
+		
 			System.out.println("solution");
 			System.out.println(funcString);
 			System.out.println("Moves Required " + (solvedList.size()-1));
-		
-	}
-		
-		
-		
-		// turn puzzle into graph
-		// check if it is solved
-		// find path from current state to desired state
-		// we will need to check if the move we made moved the tile into the desired position
-		// keep note of tiles in position
-		// solve...
-		//File output = new File(args[1]);
+			System.out.println(solvedList.get(solvedList.size()-1));
+			File out = new File(args[1]);
+			// passing file instance in filewriter
+		FileWriter wr = new FileWriter(out);
+			// calling writer.write() method with the string
+		wr.write(funcString);
+			// flushing the writer
+		wr.flush();
+			// closing the writer
+		wr.close();
+		}
+		catch (NullPointerException e) {
+			// TODO: handle exception
+		}
 
 	}
 }
