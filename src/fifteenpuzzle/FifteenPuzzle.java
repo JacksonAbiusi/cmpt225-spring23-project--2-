@@ -18,9 +18,11 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 
 	private int board[][];
 	public String move;// the move from previous node to get to current puzzle
-	public String solvedPortion;
-	private double score;
+	public ArrayList<Integer> solvedPortion;
+	public double score;
 	private int heuristic = 100;
+	private int hashCode;
+	private int cost;
 	
 
 	private void checkBoard() throws BadBoardException {
@@ -55,6 +57,7 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 		move = "";
 		solvedPortion = curSolved();
 		score = 0;
+		cost = 0;
 		heuristic = 100;
 		int c1, c2, s;
 		for (int i = 0; i < SIZE; i++) {
@@ -74,11 +77,12 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 			}
 		}
 		checkBoard();
-
+		this.hashCode = hashCode();
+		calcHeuristic();
 		br.close();
 	}
 
-	public FifteenPuzzle(FifteenPuzzle p, int tile){
+	public FifteenPuzzle(FifteenPuzzle p){
 		this.SIZE = p.SIZE;
 		this.board = new int[SIZE][SIZE];
 		for(int i = 0; i < SIZE; i++){
@@ -88,8 +92,9 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 		}
 		this.solvedPortion = curSolved();
 		this.move = "";
-		this.score = (int) score(tile);
-		this.heuristic = 100;
+		this.cost = 1;
+		calcHeuristic();
+		this.hashCode = hashCode();
 		
 		
 	}
@@ -177,16 +182,18 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 		return true;
 	}
 
-	public String curSolved() {
-		String s = "";
+	public ArrayList<Integer> curSolved() {
+		ArrayList<Integer> s = new ArrayList<Integer>();
+		int size = SIZE*SIZE;
 		for (int i = 0; i < SIZE; i++)
 			for (int j = 0; j < SIZE; j++)
-				if (board[i][j] == (SIZE * i + j + 1) % 16){
-					s += board[i][j];
+				if (board[i][j] == (SIZE * i + j + 1) % size){
+					s.add( board[i][j]);
 				} else{
+					solvedPortion = s;
 					return s;
 				}
-					
+			solvedPortion = s;		
 		return s;
 	}
 
@@ -241,48 +248,12 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 		return null;
 	}
 
-	public int distanceMove(int tile, int direction) throws IllegalMoveException{
-		// calculate distance in moves from where tile should be to where it is
-		Pair curr = findCoord(tile);
-		Pair dest = new Pair((tile%4)-1, (tile/4));
-		int score = 0;
-
-		switch (direction) {
-			case UP: {
-				if(curr.j > dest.j)
-				score++;
-				if (curr.j < dest.j)
-				score--;
-			}
-			case DOWN: {
-				if(curr.j < dest.j)
-					score++;
-				if (curr.j > dest.j)
-					score++;
-			}
-			case RIGHT: {
-				if(curr.i < dest.i)
-					score++;
-				if (curr.i > dest.i)
-					score--;
-			}
-			case LEFT: {
-				if (curr.i > dest.i)
-					score++;
-				if (curr.i < dest.i)
-					score--;
-			
-			}
-			
-		}
-		return score;
-	
-	}
-
 
 	@Override
 	public int hashCode() {
-		return printBoard().hashCode();
+		this.hashCode = printBoard().hashCode();
+		return this.hashCode;
+
 	}
 
 	@Override
@@ -295,7 +266,7 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 			return true;
 		}
 		FifteenPuzzle p = (FifteenPuzzle) obj;
-		if(this.hashCode() == p.hashCode()){
+		if(this.getHashCode() == p.getHashCode()){
 			return true;
 		}
 		return false;
@@ -304,24 +275,28 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 
 
 
-	public double heuristic(int tile){
-		Pair curr = findCoord(tile);
-		Pair dest = new Pair((tile%4)-1, (tile/4));
-		double dy = Math.abs(curr.i - dest.i);
-    	double dx = Math.abs(curr.j - dest.j);
-		this.heuristic = SIZE*(int) (dx + dy);
-    	return heuristic;
+	public void calcHeuristic(){
+		
 
-	}
+		int r = 0;
+		int count = 1;
+		
+		for (int i = 0; i < SIZE; i++){
+			for (int j = 0; j < SIZE; j++) {
+				if(board[i][j] != count){
+					int value = board[i][j];
+					int row = (value-1)/SIZE;
+					int col = (value-1)%SIZE;
+					r += Math.abs(row-i) + Math.abs(col -j);
+				}
+				count++;
+				
+			}
+		}
+			
+		this.heuristic = r;
+		
 
-	public double score(int tile){
-		double sum = SIZE*SIZE;
-		sum -= solvedPortion.length()*2;
-		sum += this.heuristic(tile);
-		Random r = new Random();
-		sum += r.nextDouble();
-		this.score =  sum;
-		return score;
 	}
 
 	public double getScore(){
@@ -330,16 +305,41 @@ public class FifteenPuzzle implements Comparable<FifteenPuzzle>{
 
 	@Override
 	public int compareTo(FifteenPuzzle o) {
-		double compare = Double.compare(this.getScore(), o.getScore());
+		int compare = Integer.compare(this.getHashCode(), o.getHashCode());
+		
 		if (compare == 0)
-			return 1;
+			return 0;
 
-		return 0;
+		if(compare == -1){
+			return -1;
+		}
+
+		if(compare == 1){
+			return 1;
+		}
+		return compare;
 	}
 
 	public int getHeuristic(){
 		return heuristic;
 	}
 
+	public int getCost(){
+		return cost;
+	}
+
+	public void setCost(AStarNodeWrapper a){
+
+		a.getTotalCostFromStart();
+	}
+
+	public int getHashCode(){
+		return hashCode;
+	}
+
+	public void setHeuristic(int num){
+		heuristic = num;
+
+	}
 
 }

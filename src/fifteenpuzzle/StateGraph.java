@@ -79,10 +79,10 @@ public class StateGraph {
     }
   }
 
-  public double edgeValue(FifteenPuzzle node, FifteenPuzzle neighbour){
-    double val = 0;
+  public int edgeValue(FifteenPuzzle node, FifteenPuzzle neighbour){
+    int val = 0;
     
-   val = Math.abs(neighbour.getHeuristic() - node.getHeuristic());
+    val = node.getCost() + 1;
     
     return val;
   }

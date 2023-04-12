@@ -54,8 +54,8 @@ public class AStarNodeWrapper implements Comparable<AStarNodeWrapper>{
   }
 
 
-  public double heuristic(int tile){
-		return node.heuristic(tile);
+  public int heuristic(){
+		return node.getHeuristic();
 
 	}
 
@@ -102,7 +102,7 @@ public class AStarNodeWrapper implements Comparable<AStarNodeWrapper>{
     if(this.node.equals(o.node))
     return 0;
 
-    if(this.node.getScore() > o.node.getScore()){
+    if(this.node.getHeuristic() > o.node.getHeuristic()){
       return 1;
     } else{
       return -1;

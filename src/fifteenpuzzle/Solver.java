@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class Solver {
-	
+
 	private static List<FifteenPuzzle> buildPath(AStarNodeWrapper nodeWrapper) {
 		List<FifteenPuzzle> path = new ArrayList<>();
 		while (nodeWrapper != null) {
@@ -35,23 +35,18 @@ public class Solver {
 		Set<FifteenPuzzle> shortestPathFound = new HashSet<FifteenPuzzle>();
 	
 		// Add source to queue
-		int tile = 1;
+		//int tile = source.curSolved().size()+1;
+		
 		AStarNodeWrapper sourceWrapper =
-			new AStarNodeWrapper(source, null, 0.0, source.heuristic(tile));
+			new AStarNodeWrapper(source, null, 0.0, source.getHeuristic());
 		nodeWrappers.put(source, sourceWrapper);
 		queue.add(sourceWrapper);
-
+		//source.score(tile);
+		double prevScore = source.getScore();
 		while (!queue.isEmpty()) {
 			AStarNodeWrapper nodeWrapper = queue.pollFirst();
 			FifteenPuzzle node = nodeWrapper.getNode();
-		
-			tile = node.solvedPortion.length() + 1;
-			
-			System.out.println(node);
-			System.out.println("added node" + "Score:" + node.getScore() + " Move:" + node.move);
 			shortestPathFound.add(node);
-			
-			
 
 			// Have we reached the target? --> Build and return the path
 			if (node.isSolved()) {
@@ -60,28 +55,24 @@ public class Solver {
 			// The algorithm should not choose states that lower the score
 			// Iterate over all neighbors
 			AdjacentVerticies adj = new AdjacentVerticies();
-			Set<FifteenPuzzle> neighbors = adj.adjNodes(node, tile);
+			Set<FifteenPuzzle> neighbors = adj.adjNodes(node);
 			
 			for (FifteenPuzzle neighbor : neighbors) {
 			  // Ignore neighbor if shortest path already found
-			  System.out.println(neighbor.score(tile));
+		
 
 			  if (shortestPathFound.contains(neighbor)) {
 				continue;
 			  }
-			  // Calculate total cost from start to neighbor via current node
-			  node.heuristic(tile);
-			  neighbor.heuristic(tile);
-			
-			  double cost = graph.edgeValue(node, neighbor);
-			  double totalCostFromStart = nodeWrapper.getTotalCostFromStart() + cost;
+			  //update cost
+			  double totalCostFromStart = nodeWrapper.getTotalCostFromStart() + 1;
 	  
 			  // Neighbor not yet discovered?
 			  AStarNodeWrapper neighborWrapper = nodeWrappers.get(neighbor);
 			  if (neighborWrapper == null) {
 				neighborWrapper =
 					new AStarNodeWrapper(
-						neighbor, nodeWrapper, totalCostFromStart, node.heuristic(tile));
+						neighbor, nodeWrapper, totalCostFromStart, neighbor.getHeuristic());
 				nodeWrappers.put(neighbor, neighborWrapper);
 				queue.add(neighborWrapper);
 			  }
@@ -94,10 +85,8 @@ public class Solver {
 				// Because TreeSet uses compareTo() to identity a node to remove,
 				// we have to remove it *before* we change the cost!
 				queue.remove(neighborWrapper);
-	  
 				neighborWrapper.setTotalCostFromStart(totalCostFromStart);
 				neighborWrapper.setPredecessor(nodeWrapper);
-	  
 				queue.add(neighborWrapper);
 			  }
 			}
@@ -147,14 +136,18 @@ public class Solver {
 		while(it.hasNext()){
 			funcString += it.next().move;
 		}
+		funcString = funcString.substring(0, funcString.length()-1);
+		System.out.println(funcString.length());
+		System.out.println(outString.length());
 		if(funcString.equals(outString)){
 			System.out.println("Perfect Sol");
+			System.out.println(funcString);
 		} else{
 			System.out.println("solution");
 			System.out.println(funcString);
-			System.out.println(outString);
 			System.out.println("Moves Required " + (solvedList.size()-1));
-		}
+		
+	}
 		
 		
 		
@@ -163,11 +156,6 @@ public class Solver {
 		// find path from current state to desired state
 		// we will need to check if the move we made moved the tile into the desired position
 		// keep note of tiles in position
-
-
-
-
-		File output = new File(args[1]);
 		// solve...
 		//File output = new File(args[1]);
 
